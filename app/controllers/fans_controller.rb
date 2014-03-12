@@ -5,6 +5,7 @@ class FansController < ApplicationController
   # GET /fans.json
   def index
     @fans = Fan.all
+    Sleeper.perform_async(10)
   end
 
   # GET /fans/1
@@ -28,7 +29,7 @@ class FansController < ApplicationController
 
     respond_to do |format|
       if @fan.save
-        FanMailer.welcome(@fan.id).deliver
+        FanMailer.delay.welcome(@fan.id)
         format.html { redirect_to @fan, notice: 'Fan was successfully created.' }
         format.json { render action: 'show', status: :created, location: @fan }
       else
